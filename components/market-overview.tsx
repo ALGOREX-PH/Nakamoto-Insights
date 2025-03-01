@@ -3,6 +3,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
+import { useEffect, useState } from "react";
 
 // Mock data for Bitcoin price chart
 const bitcoinData = [
@@ -36,27 +37,64 @@ const ethereumData = [
   { date: "Dec", price: 3500 },
 ];
 
+// Simplified data for mobile view
+const getSimplifiedData = (data: any[]) => {
+  // Return only every other data point for smaller screens
+  return data.filter((_, index) => index % 2 === 0);
+};
+
 const MarketOverview = () => {
+  const [isMobile, setIsMobile] = useState(false);
+  const [chartData, setChartData] = useState({
+    bitcoin: bitcoinData,
+    ethereum: ethereumData
+  });
+
+  // Check if mobile view and adjust chart data
+  useEffect(() => {
+    const checkIfMobile = () => {
+      const mobile = window.innerWidth < 768;
+      setIsMobile(mobile);
+      
+      if (mobile) {
+        setChartData({
+          bitcoin: getSimplifiedData(bitcoinData),
+          ethereum: getSimplifiedData(ethereumData)
+        });
+      } else {
+        setChartData({
+          bitcoin: bitcoinData,
+          ethereum: ethereumData
+        });
+      }
+    };
+    
+    checkIfMobile();
+    window.addEventListener('resize', checkIfMobile);
+    
+    return () => window.removeEventListener('resize', checkIfMobile);
+  }, []);
+
   return (
     <Card className="border-border/40">
-      <CardHeader>
-        <CardTitle>Market Overview</CardTitle>
-        <CardDescription>
+      <CardHeader className="p-4 sm:p-6">
+        <CardTitle className="text-lg sm:text-xl">Market Overview</CardTitle>
+        <CardDescription className="text-sm">
           Track the performance of major cryptocurrencies
         </CardDescription>
       </CardHeader>
-      <CardContent>
+      <CardContent className="p-4 sm:p-6 pt-0 sm:pt-0">
         <Tabs defaultValue="bitcoin">
-          <TabsList className="mb-4">
+          <TabsList className="mb-4 w-full justify-start">
             <TabsTrigger value="bitcoin">Bitcoin</TabsTrigger>
             <TabsTrigger value="ethereum">Ethereum</TabsTrigger>
           </TabsList>
           <TabsContent value="bitcoin">
-            <div className="h-[300px]">
+            <div className="h-[200px] sm:h-[250px] md:h-[300px]">
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart
-                  data={bitcoinData}
-                  margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
+                  data={chartData.bitcoin}
+                  margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
                 >
                   <defs>
                     <linearGradient id="colorBtc" x1="0" y1="0" x2="0" y2="1">
@@ -64,14 +102,16 @@ const MarketOverview = () => {
                       <stop offset="95%" stopColor="hsl(var(--chart-1))" stopOpacity={0} />
                     </linearGradient>
                   </defs>
-                  <XAxis dataKey="date" stroke="hsl(var(--muted-foreground))" />
-                  <YAxis stroke="hsl(var(--muted-foreground))" />
+                  <XAxis dataKey="date" stroke="hsl(var(--muted-foreground))" tick={{ fontSize: isMobile ? 10 : 12 }} />
+                  <YAxis stroke="hsl(var(--muted-foreground))" tick={{ fontSize: isMobile ? 10 : 12 }} width={isMobile ? 30 : 40} />
                   <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
                   <Tooltip 
                     contentStyle={{ 
                       backgroundColor: "hsl(var(--card))", 
                       borderColor: "hsl(var(--border))",
-                      color: "hsl(var(--card-foreground))"
+                      color: "hsl(var(--card-foreground))",
+                      fontSize: isMobile ? '12px' : '14px',
+                      padding: isMobile ? '4px' : '8px'
                     }} 
                   />
                   <Area 
@@ -84,23 +124,23 @@ const MarketOverview = () => {
                 </AreaChart>
               </ResponsiveContainer>
             </div>
-            <div className="mt-4 grid grid-cols-2 gap-4">
-              <div className="rounded-lg bg-muted p-3">
-                <p className="text-sm font-medium">Current Price</p>
-                <p className="text-2xl font-bold">$68,423.12</p>
+            <div className="mt-4 grid grid-cols-2 gap-3 sm:gap-4">
+              <div className="rounded-lg bg-muted p-2 sm:p-3">
+                <p className="text-xs sm:text-sm font-medium">Current Price</p>
+                <p className="text-lg sm:text-2xl font-bold">$68,423.12</p>
               </div>
-              <div className="rounded-lg bg-muted p-3">
-                <p className="text-sm font-medium">24h Change</p>
-                <p className="text-2xl font-bold text-green-500">+2.34%</p>
+              <div className="rounded-lg bg-muted p-2 sm:p-3">
+                <p className="text-xs sm:text-sm font-medium">24h Change</p>
+                <p className="text-lg sm:text-2xl font-bold text-green-500">+2.34%</p>
               </div>
             </div>
           </TabsContent>
           <TabsContent value="ethereum">
-            <div className="h-[300px]">
+            <div className="h-[200px] sm:h-[250px] md:h-[300px]">
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart
-                  data={ethereumData}
-                  margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
+                  data={chartData.ethereum}
+                  margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
                 >
                   <defs>
                     <linearGradient id="colorEth" x1="0" y1="0" x2="0" y2="1">
@@ -108,14 +148,16 @@ const MarketOverview = () => {
                       <stop offset="95%" stopColor="hsl(var(--chart-2))" stopOpacity={0} />
                     </linearGradient>
                   </defs>
-                  <XAxis dataKey="date" stroke="hsl(var(--muted-foreground))" />
-                  <YAxis stroke="hsl(var(--muted-foreground))" />
+                  <XAxis dataKey="date" stroke="hsl(var(--muted-foreground))" tick={{ fontSize: isMobile ? 10 : 12 }} />
+                  <YAxis stroke="hsl(var(--muted-foreground))" tick={{ fontSize: isMobile ? 10 : 12 }} width={isMobile ? 30 : 40} />
                   <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
                   <Tooltip 
                     contentStyle={{ 
                       backgroundColor: "hsl(var(--card))", 
                       borderColor: "hsl(var(--border))",
-                      color: "hsl(var(--card-foreground))"
+                      color: "hsl(var(--card-foreground))",
+                      fontSize: isMobile ? '12px' : '14px',
+                      padding: isMobile ? '4px' : '8px'
                     }} 
                   />
                   <Area 
@@ -128,14 +170,14 @@ const MarketOverview = () => {
                 </AreaChart>
               </ResponsiveContainer>
             </div>
-            <div className="mt-4 grid grid-cols-2 gap-4">
-              <div className="rounded-lg bg-muted p-3">
-                <p className="text-sm font-medium">Current Price</p>
-                <p className="text-2xl font-bold">$3,521.87</p>
+            <div className="mt-4 grid grid-cols-2 gap-3 sm:gap-4">
+              <div className="rounded-lg bg-muted p-2 sm:p-3">
+                <p className="text-xs sm:text-sm font-medium">Current Price</p>
+                <p className="text-lg sm:text-2xl font-bold">$3,521.87</p>
               </div>
-              <div className="rounded-lg bg-muted p-3">
-                <p className="text-sm font-medium">24h Change</p>
-                <p className="text-2xl font-bold text-green-500">+1.56%</p>
+              <div className="rounded-lg bg-muted p-2 sm:p-3">
+                <p className="text-xs sm:text-sm font-medium">24h Change</p>
+                <p className="text-lg sm:text-2xl font-bold text-green-500">+1.56%</p>
               </div>
             </div>
           </TabsContent>
