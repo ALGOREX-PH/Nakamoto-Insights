@@ -44,14 +44,14 @@ const FeaturedInsight = ({ insight }: { insight: InsightProps }) => {
   return (
     <Card className="h-full border-border/40 overflow-hidden transition-all hover:shadow-md">
       <CardHeader className="pb-2">
-        <div className="flex justify-between items-start">
+        <div className="flex justify-between items-start flex-wrap gap-2">
           <Badge variant="secondary" className="mb-2">{insight.category}</Badge>
           <div className="text-xs text-muted-foreground">{insight.date}</div>
         </div>
-        <CardTitle className="text-xl">{insight.title}</CardTitle>
+        <CardTitle className="text-xl line-clamp-2">{insight.title}</CardTitle>
       </CardHeader>
       <CardContent>
-        <CardDescription className="text-sm text-muted-foreground">
+        <CardDescription className="text-sm text-muted-foreground line-clamp-3">
           {insight.description}
         </CardDescription>
       </CardContent>
@@ -70,7 +70,7 @@ const FeaturedInsight = ({ insight }: { insight: InsightProps }) => {
 const FeaturedInsights = () => {
   return (
     <div>
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex justify-between items-center mb-6 flex-wrap gap-4">
         <h2 className="text-2xl font-bold">Featured Insights</h2>
         <Button variant="outline" asChild>
           <Link href="/insights">
@@ -78,7 +78,7 @@ const FeaturedInsights = () => {
           </Link>
         </Button>
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
         {insights.map((insight, index) => (
           <FeaturedInsight key={index} insight={insight} />
         ))}
