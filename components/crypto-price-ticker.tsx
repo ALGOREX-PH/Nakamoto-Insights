@@ -22,6 +22,19 @@ const initialPrices: CryptoPrice[] = [
 
 const CryptoPriceTicker = () => {
   const [prices, setPrices] = useState<CryptoPrice[]>(initialPrices);
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Check if mobile view
+  useEffect(() => {
+    const checkIfMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    
+    checkIfMobile();
+    window.addEventListener('resize', checkIfMobile);
+    
+    return () => window.removeEventListener('resize', checkIfMobile);
+  }, []);
 
   // Simulate price updates
   useEffect(() => {
@@ -40,25 +53,49 @@ const CryptoPriceTicker = () => {
 
   return (
     <div className="w-full overflow-hidden">
-      <div className="flex animate-marquee space-x-4 py-2">
-        {prices.map((crypto) => (
-          <Card key={crypto.symbol} className="min-w-[180px] border-border/40 bg-card/50">
-            <CardContent className="p-3 flex items-center justify-between">
-              <div>
-                <p className="font-medium">{crypto.symbol}</p>
-                <p className="text-xs text-muted-foreground">{crypto.name}</p>
-              </div>
-              <div className="text-right">
-                <p className="font-medium">${crypto.price.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
-                <p className={`text-xs flex items-center justify-end ${crypto.change24h >= 0 ? 'text-green-500' : 'text-red-500'}`}>
-                  {crypto.change24h >= 0 ? <ArrowUp className="h-3 w-3 mr-1" /> : <ArrowDown className="h-3 w-3 mr-1" />}
-                  {Math.abs(crypto.change24h).toFixed(2)}%
-                </p>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+      {isMobile ? (
+        // Mobile view: grid layout
+        <div className="grid grid-cols-2 gap-3 py-2">
+          {prices.map((crypto) => (
+            <Card key={crypto.symbol} className="border-border/40 bg-card/50">
+              <CardContent className="p-3 flex flex-col">
+                <div className="flex justify-between items-center mb-1">
+                  <p className="font-medium">{crypto.symbol}</p>
+                  <p className={`text-xs flex items-center ${crypto.change24h >= 0 ? 'text-green-500' : 'text-red-500'}`}>
+                    {crypto.change24h >= 0 ? <ArrowUp className="h-3 w-3 mr-1" /> : <ArrowDown className="h-3 w-3 mr-1" />}
+                    {Math.abs(crypto.change24h).toFixed(2)}%
+                  </p>
+                </div>
+                <div className="flex justify-between items-center">
+                  <p className="text-xs text-muted-foreground">{crypto.name}</p>
+                  <p className="text-sm font-medium">${crypto.price.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      ) : (
+        // Desktop view: marquee
+        <div className="flex animate-marquee space-x-4 py-2">
+          {prices.map((crypto) => (
+            <Card key={crypto.symbol} className="min-w-[180px] border-border/40 bg-card/50">
+              <CardContent className="p-3 flex items-center justify-between">
+                <div>
+                  <p className="font-medium">{crypto.symbol}</p>
+                  <p className="text-xs text-muted-foreground">{crypto.name}</p>
+                </div>
+                <div className="text-right">
+                  <p className="font-medium">${crypto.price.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
+                  <p className={`text-xs flex items-center justify-end ${crypto.change24h >= 0 ? 'text-green-500' : 'text-red-500'}`}>
+                    {crypto.change24h >= 0 ? <ArrowUp className="h-3 w-3 mr-1" /> : <ArrowDown className="h-3 w-3 mr-1" />}
+                    {Math.abs(crypto.change24h).toFixed(2)}%
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      )}
     </div>
   );
 };
