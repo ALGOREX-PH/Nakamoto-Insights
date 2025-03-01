@@ -25,17 +25,17 @@ const NewsletterSignup = () => {
 
   return (
     <Card className="border-border/40 bg-gradient-to-br from-background to-muted">
-      <CardHeader>
-        <CardTitle className="text-xl">Join the Nakamoto Insights Newsletter</CardTitle>
-        <CardDescription>
+      <CardHeader className="p-4 sm:p-6">
+        <CardTitle className="text-lg sm:text-xl">Join the Nakamoto Insights Newsletter</CardTitle>
+        <CardDescription className="text-sm sm:text-base">
           Get weekly crypto analysis, market trends, and exclusive insights directly to your inbox.
         </CardDescription>
       </CardHeader>
-      <CardContent>
+      <CardContent className="p-4 sm:p-6 pt-0 sm:pt-0">
         {isSubmitted ? (
           <div className="flex items-center space-x-2 text-green-500">
-            <Check className="h-5 w-5" />
-            <p>Thank you for subscribing! Check your inbox to confirm.</p>
+            <Check className="h-5 w-5 flex-shrink-0" />
+            <p className="text-sm sm:text-base">Thank you for subscribing! Check your inbox to confirm.</p>
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3">
@@ -47,7 +47,7 @@ const NewsletterSignup = () => {
               required
               className="flex-1"
             />
-            <Button type="submit" disabled={isLoading}>
+            <Button type="submit" disabled={isLoading} className="w-full sm:w-auto">
               {isLoading ? "Subscribing..." : "Subscribe"}
             </Button>
           </form>
