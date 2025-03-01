@@ -75,6 +75,32 @@ const MarketOverview = () => {
     return () => window.removeEventListener('resize', checkIfMobile);
   }, []);
 
+  // Common chart props to avoid defaultProps warnings
+  const xAxisProps = {
+    dataKey: "date",
+    stroke: "hsl(var(--muted-foreground))",
+    tick: { fontSize: isMobile ? 10 : 12 },
+    allowDuplicatedCategory: false
+  };
+
+  const yAxisProps = {
+    stroke: "hsl(var(--muted-foreground))",
+    tick: { fontSize: isMobile ? 10 : 12 },
+    width: isMobile ? 30 : 40,
+    allowDecimals: true,
+    scale: "auto"
+  };
+
+  const tooltipProps = {
+    contentStyle: { 
+      backgroundColor: "hsl(var(--card))", 
+      borderColor: "hsl(var(--border))",
+      color: "hsl(var(--card-foreground))",
+      fontSize: isMobile ? '12px' : '14px',
+      padding: isMobile ? '4px' : '8px'
+    }
+  };
+
   return (
     <Card className="border-border/40">
       <CardHeader className="p-4 sm:p-6">
@@ -102,18 +128,10 @@ const MarketOverview = () => {
                       <stop offset="95%" stopColor="hsl(var(--chart-1))" stopOpacity={0} />
                     </linearGradient>
                   </defs>
-                  <XAxis dataKey="date" stroke="hsl(var(--muted-foreground))" tick={{ fontSize: isMobile ? 10 : 12 }} />
-                  <YAxis stroke="hsl(var(--muted-foreground))" tick={{ fontSize: isMobile ? 10 : 12 }} width={isMobile ? 30 : 40} />
+                  <XAxis {...xAxisProps} />
+                  <YAxis {...yAxisProps} />
                   <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                  <Tooltip 
-                    contentStyle={{ 
-                      backgroundColor: "hsl(var(--card))", 
-                      borderColor: "hsl(var(--border))",
-                      color: "hsl(var(--card-foreground))",
-                      fontSize: isMobile ? '12px' : '14px',
-                      padding: isMobile ? '4px' : '8px'
-                    }} 
-                  />
+                  <Tooltip {...tooltipProps} />
                   <Area 
                     type="monotone" 
                     dataKey="price" 
@@ -148,18 +166,10 @@ const MarketOverview = () => {
                       <stop offset="95%" stopColor="hsl(var(--chart-2))" stopOpacity={0} />
                     </linearGradient>
                   </defs>
-                  <XAxis dataKey="date" stroke="hsl(var(--muted-foreground))" tick={{ fontSize: isMobile ? 10 : 12 }} />
-                  <YAxis stroke="hsl(var(--muted-foreground))" tick={{ fontSize: isMobile ? 10 : 12 }} width={isMobile ? 30 : 40} />
+                  <XAxis {...xAxisProps} />
+                  <YAxis {...yAxisProps} />
                   <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                  <Tooltip 
-                    contentStyle={{ 
-                      backgroundColor: "hsl(var(--card))", 
-                      borderColor: "hsl(var(--border))",
-                      color: "hsl(var(--card-foreground))",
-                      fontSize: isMobile ? '12px' : '14px',
-                      padding: isMobile ? '4px' : '8px'
-                    }} 
-                  />
+                  <Tooltip {...tooltipProps} />
                   <Area 
                     type="monotone" 
                     dataKey="price" 
