@@ -4,6 +4,8 @@ import MarketOverview from "@/components/market-overview";
 import FeaturedInsights from "@/components/featured-insights";
 import AboutAlex from "@/components/about-alex";
 import NewsletterSignup from "@/components/newsletter-signup";
+import UpcomingEvents from "@/components/upcoming-events";
+import QuickLinks from "@/components/quick-links";
 import { Separator } from "@/components/ui/separator";
 
 export default function Home() {
@@ -29,6 +31,17 @@ export default function Home() {
       </section>
       
       <Separator className="container opacity-30 mx-4 sm:mx-6" />
+      
+      <section className="container px-4 sm:px-6 py-8 sm:py-12 md:py-16">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
+          <div className="lg:col-span-2">
+            <UpcomingEvents />
+          </div>
+          <div>
+            <QuickLinks />
+          </div>
+        </div>
+      </section>
       
       <section className="container px-4 sm:px-6 py-8 sm:py-12 md:py-16">
         <AboutAlex />
