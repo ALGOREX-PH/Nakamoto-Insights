@@ -102,7 +102,7 @@ const MarketOverview = () => {
   };
 
   return (
-    <Card className="border-border/40">
+    <Card className="border-border/40 h-full">
       <CardHeader className="p-4 sm:p-6">
         <CardTitle className="text-lg sm:text-xl">Market Overview</CardTitle>
         <CardDescription className="text-sm">
@@ -145,7 +145,7 @@ const MarketOverview = () => {
             <div className="mt-4 grid grid-cols-2 gap-3 sm:gap-4">
               <div className="rounded-lg bg-muted p-2 sm:p-3">
                 <p className="text-xs sm:text-sm font-medium">Current Price</p>
-                <p className="text-lg sm:text-2xl font-bold">$68,423.12</p>
+                <p className="text-lg sm:text-2xl font-bold">$42,850.00</p>
               </div>
               <div className="rounded-lg bg-muted p-2 sm:p-3">
                 <p className="text-xs sm:text-sm font-medium">24h Change</p>
@@ -183,11 +183,11 @@ const MarketOverview = () => {
             <div className="mt-4 grid grid-cols-2 gap-3 sm:gap-4">
               <div className="rounded-lg bg-muted p-2 sm:p-3">
                 <p className="text-xs sm:text-sm font-medium">Current Price</p>
-                <p className="text-lg sm:text-2xl font-bold">$3,521.87</p>
+                <p className="text-lg sm:text-2xl font-bold">$2,850.87</p>
               </div>
               <div className="rounded-lg bg-muted p-2 sm:p-3">
                 <p className="text-xs sm:text-sm font-medium">24h Change</p>
-                <p className="text-lg sm:text-2xl font-bold text-green-500">+1.56%</p>
+                <p className="text-lg sm:text-2xl font-bold text-red-500">-1.23%</p>
               </div>
             </div>
           </TabsContent>
