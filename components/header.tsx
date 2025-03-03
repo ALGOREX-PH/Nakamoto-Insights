@@ -41,7 +41,7 @@ const Header = () => {
 
   return (
     <header className={`sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 transition-shadow ${scrolled ? 'shadow-md' : ''}`}>
-      <div className="container flex h-16 items-center justify-between px-4 sm:px-6">
+      <div className="container flex h-16 items-center justify-between px-4 sm:px-6 mx-auto max-w-full">
         <div className="flex items-center gap-2">
           <Link href="/" className="flex items-center gap-2">
             <Bitcoin className="h-7 w-7 sm:h-8 sm:w-8 text-chart-1" />
@@ -84,7 +84,7 @@ const Header = () => {
       {/* Mobile Navigation */}
       {isMenuOpen && (
         <div className="md:hidden fixed top-16 left-0 right-0 bottom-0 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/90 z-40 overflow-y-auto">
-          <nav className="container flex flex-col space-y-4 py-6 px-4">
+          <nav className="container flex flex-col space-y-4 py-6 px-4 mx-auto max-w-full">
             <Link 
               href="/market-analysis" 
               className="flex items-center gap-2 p-3 hover:bg-muted rounded-md"
