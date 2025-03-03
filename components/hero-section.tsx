@@ -4,7 +4,7 @@ import { ArrowRight, TrendingUp, MessageSquare } from "lucide-react";
 
 const HeroSection = () => {
   return (
-    <div className="relative overflow-hidden bg-gradient-to-b from-background to-background/80 py-12 md:py-16 lg:py-24">
+    <div className="relative overflow-hidden bg-gradient-to-b from-background to-background/80 py-12 md:py-16 lg:py-24 w-full">
       {/* Hexagonal grid background with parallax effect */}
       <div className="absolute inset-0 z-0 opacity-10 transform translate-y-0 transition-transform duration-1000 ease-out">
         <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
@@ -17,7 +17,7 @@ const HeroSection = () => {
         </svg>
       </div>
       
-      <div className="container relative z-10 px-4 sm:px-6">
+      <div className="container relative z-10 px-4 sm:px-6 mx-auto max-w-full">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
           <div className="text-center lg:text-left">
             <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 sm:mb-6 bg-clip-text text-transparent bg-gradient-to-r from-chart-1 via-chart-2 to-chart-4">
