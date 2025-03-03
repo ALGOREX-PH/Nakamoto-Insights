@@ -3,8 +3,8 @@ import { Bitcoin } from "lucide-react";
 
 const Footer = () => {
   return (
-    <footer className="border-t border-border/40 bg-background">
-      <div className="container py-8 md:py-12 px-4 sm:px-6">
+    <footer className="border-t border-border/40 bg-background w-full">
+      <div className="container py-8 md:py-12 px-4 sm:px-6 mx-auto max-w-full">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
           <div className="flex flex-col">
             <div className="flex items-center gap-2 mb-4">
