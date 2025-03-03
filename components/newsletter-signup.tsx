@@ -1,27 +1,40 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Check, Mail } from "lucide-react";
 
 const NewsletterSignup = () => {
-  const [email, setEmail] = useState("");
-  const [isSubmitted, setIsSubmitted] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  const [mounted, setMounted] = useState(false);
+  const [formState, setFormState] = useState({
+    email: "",
+    isSubmitted: false,
+    isLoading: false
+  });
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
+    setFormState(prev => ({ ...prev, isLoading: true }));
     
     // Simulate API call
     setTimeout(() => {
-      setIsLoading(false);
-      setIsSubmitted(true);
-      setEmail("");
+      setFormState({
+        email: "",
+        isSubmitted: true,
+        isLoading: false
+      });
     }, 1000);
   };
+
+  if (!mounted) {
+    return null;
+  }
 
   return (
     <Card className="border-border/40 bg-gradient-to-br from-background to-muted">
@@ -35,7 +48,7 @@ const NewsletterSignup = () => {
         </CardDescription>
       </CardHeader>
       <CardContent className="p-4 sm:p-6 pt-0 sm:pt-0">
-        {isSubmitted ? (
+        {formState.isSubmitted ? (
           <div className="flex items-center space-x-2 text-green-500 bg-green-500/10 p-3 rounded-lg">
             <Check className="h-5 w-5 flex-shrink-0" />
             <p className="text-sm sm:text-base">Thank you for subscribing! Check your inbox to confirm.</p>
@@ -45,17 +58,17 @@ const NewsletterSignup = () => {
             <Input
               type="email"
               placeholder="Enter your email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              value={formState.email}
+              onChange={(e) => setFormState(prev => ({ ...prev, email: e.target.value }))}
               required
               className="flex-1"
             />
             <Button 
               type="submit" 
-              disabled={isLoading} 
+              disabled={formState.isLoading} 
               className="w-full sm:w-auto bg-gradient-to-r from-chart-1 to-chart-4 hover:from-chart-1/90 hover:to-chart-4/90 transition-all"
             >
-              {isLoading ? "Subscribing..." : "Subscribe"}
+              {formState.isLoading ? "Subscribing..." : "Subscribe"}
             </Button>
           </form>
         )}
