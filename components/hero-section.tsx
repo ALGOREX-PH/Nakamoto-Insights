@@ -50,7 +50,7 @@ const HeroSection = () => {
                 </Link>
               </Button>
               <Button size="lg" variant="outline" className="w-full sm:w-auto group" asChild>
-                <Link href="#chat">
+                <Link href="/chat">
                   <MessageSquare className="mr-2 h-5 w-5 group-hover:animate-pulse" />
                   Ask Crypto Sage AI
                 </Link>
