@@ -104,15 +104,13 @@ const MarketOverview = () => {
     stroke = "hsl(var(--muted-foreground))",
     tick = { fontSize: isMobile ? 10 : 12 },
     width = isMobile ? 30 : 40,
-    allowDecimals = true,
-    scale = "auto"
+    allowDecimals = true
   } = {}) => (
     <YAxis
       stroke={stroke}
       tick={tick}
       width={width}
       allowDecimals={allowDecimals}
-      scale={scale}
     />
   );
 
