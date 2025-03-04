@@ -1,9 +1,7 @@
 import { OpenAI } from 'openai';
 import { OpenAIStream, StreamingTextResponse } from 'ai';
  
-// Remove edge runtime to ensure environment variables are accessible
- 
-export const dynamic = 'force-dynamic';
+export const runtime = 'edge';
 
 export async function POST(req: Request) {
   // Check if API key exists
@@ -21,7 +19,7 @@ export async function POST(req: Request) {
     const openai = new OpenAI({
       apiKey: process.env.OPENAI_API_KEY,
     });
-
+    
     const response = await openai.chat.completions.create({
       model: 'gpt-3.5-turbo',
       stream: true,
@@ -38,9 +36,6 @@ export async function POST(req: Request) {
     return new StreamingTextResponse(stream);
   } catch (error) {
     console.error('Error:', error);
-    return new Response(
-      JSON.stringify({ error: "Failed to process chat request" }), 
-      { status: 500, headers: { 'Content-Type': 'application/json' } }
-    );
+    return new Response("An error occurred", { status: 500 });
   }
 }
