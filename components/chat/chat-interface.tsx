@@ -18,7 +18,18 @@ const ChatInterface = () => {
   const { messages, input, handleInputChange, handleSubmit, isLoading } = useChat({
     api: '/api/chat',
     initialMessages: [INITIAL_MESSAGE],
+    onError: (error) => {
+      console.error('Chat error:', error);
+      alert('Error: Failed to get a response. Please try again.');
+    }
   });
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSubmit(e as any);
+    }
+  };
 
   return (
     <Card className="border-border/40">
@@ -101,6 +112,7 @@ const ChatInterface = () => {
                 <Input
                   disabled={isLoading}
                   placeholder="Ask anything about crypto..."
+                  onKeyDown={handleKeyDown}
                   value={input}
                   onChange={handleInputChange}
                   className="flex-1"
