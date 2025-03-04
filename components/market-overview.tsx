@@ -89,28 +89,24 @@ const MarketOverview = () => {
   const renderXAxis = ({
     dataKey = "date",
     stroke = "hsl(var(--muted-foreground))",
-    tick = { fontSize: isMobile ? 10 : 12 },
-    allowDuplicatedCategory = false
+    tick = { fontSize: isMobile ? 10 : 12 }
   } = {}) => (
     <XAxis
       dataKey={dataKey}
       stroke={stroke}
       tick={tick}
-      allowDuplicatedCategory={allowDuplicatedCategory}
     />
   );
 
   const renderYAxis = ({
     stroke = "hsl(var(--muted-foreground))",
     tick = { fontSize: isMobile ? 10 : 12 },
-    width = isMobile ? 30 : 40,
-    allowDecimals = true
+    width = isMobile ? 30 : 40
   } = {}) => (
     <YAxis
       stroke={stroke}
       tick={tick}
       width={width}
-      allowDecimals={allowDecimals}
     />
   );
 
