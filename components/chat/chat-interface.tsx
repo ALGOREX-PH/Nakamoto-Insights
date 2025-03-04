@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Avatar } from "@/components/ui/avatar";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Send, Bot, User, Crown, Loader2 } from "lucide-react";
+import ReactMarkdown from 'react-markdown';
 
 const INITIAL_MESSAGE = {
   id: 'initial-message',
@@ -60,7 +61,7 @@ const ChatInterface = () => {
 
           {/* Chat Area */}
           <div className="flex flex-col h-full">
-            <ScrollArea className="flex-1 p-4">
+            <ScrollArea className="flex-1 p-4 [&>div]:h-full [&_[data-radix-scroll-area-viewport]]:h-full">
               <div className="space-y-4">
                 {messages.map((message) => (
                   message.role !== 'system' && (
@@ -82,7 +83,9 @@ const ChatInterface = () => {
                           : "bg-muted"
                       }`}
                     >
-                      <p className="text-sm">{message.content}</p>
+                      <div className="text-sm prose dark:prose-invert max-w-none prose-sm">
+                        <ReactMarkdown>{message.content}</ReactMarkdown>
+                      </div>
                     </div>
                     {message.role === "user" && (
                       <Avatar className="h-8 w-8">
