@@ -1,52 +1,17 @@
-"use client";
+"use client"
 
-import { useState } from "react";
+import { useChat } from "ai/react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Avatar } from "@/components/ui/avatar";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Send, Bot, User, Crown } from "lucide-react";
-
-interface Message {
-  id: string;
-  type: "user" | "ai";
-  content: string;
-  timestamp: Date;
-}
+import { Send, Bot, User, Crown, Loader2 } from "lucide-react";
 
 const ChatInterface = () => {
-  const [messages, setMessages] = useState<Message[]>([]);
-  const [input, setInput] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!input.trim()) return;
-
-    const userMessage: Message = {
-      id: Date.now().toString(),
-      type: "user",
-      content: input,
-      timestamp: new Date(),
-    };
-
-    setMessages((prev) => [...prev, userMessage]);
-    setInput("");
-    setIsLoading(true);
-
-    // Simulate AI response
-    setTimeout(() => {
-      const aiMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        type: "ai",
-        content: "I'm analyzing the current market conditions. Based on recent trends and technical indicators, Bitcoin shows strong support at the current level. However, always remember to do your own research and never invest more than you can afford to lose.",
-        timestamp: new Date(),
-      };
-      setMessages((prev) => [...prev, aiMessage]);
-      setIsLoading(false);
-    }, 1000);
-  };
+  const { messages, input, handleInputChange, handleSubmit, isLoading } = useChat({
+    api: '/api/chat',
+  });
 
   return (
     <Card className="border-border/40">
@@ -81,26 +46,26 @@ const ChatInterface = () => {
               <div className="space-y-4">
                 {messages.map((message) => (
                   <div
-                    key={message.id}
+                    key={message.id} 
                     className={`flex gap-3 ${
-                      message.type === "user" ? "justify-end" : ""
+                      message.role === "user" ? "justify-end" : ""
                     }`}
                   >
-                    {message.type === "ai" && (
+                    {message.role === "assistant" && (
                       <Avatar className="h-8 w-8">
                         <Bot className="h-5 w-5 text-primary" />
                       </Avatar>
                     )}
                     <div
                       className={`rounded-lg p-3 max-w-[80%] ${
-                        message.type === "user"
+                        message.role === "user"
                           ? "bg-primary text-primary-foreground"
                           : "bg-muted"
                       }`}
                     >
                       <p className="text-sm">{message.content}</p>
                     </div>
-                    {message.type === "user" && (
+                    {message.role === "user" && (
                       <Avatar className="h-8 w-8">
                         <User className="h-5 w-5" />
                       </Avatar>
@@ -128,11 +93,15 @@ const ChatInterface = () => {
                 <Input
                   placeholder="Ask anything about crypto..."
                   value={input}
-                  onChange={(e) => setInput(e.target.value)}
+                  onChange={handleInputChange}
                   className="flex-1"
                 />
                 <Button type="submit" size="icon" disabled={isLoading}>
-                  <Send className="h-4 w-4" />
+                  {isLoading ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <Send className="h-4 w-4" />
+                  )}
                 </Button>
               </form>
             </div>
