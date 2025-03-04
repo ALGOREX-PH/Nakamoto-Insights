@@ -53,6 +53,7 @@
     "lucide-react": "^0.446.0",
     "next": "13.5.1",
     "next-themes": "^0.3.0",
+    "react-markdown": "^9.0.1",
     "openai": "^4.28.0",
     "ai": "^2.2.35",
     "postcss": "8.4.30",
