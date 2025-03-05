@@ -76,21 +76,23 @@
 /* Scrollbar styling */
 .scrollbar-custom {
   scrollbar-width: thin;
-  scrollbar-color: hsl(var(--muted-foreground)) transparent;
+  scrollbar-color: hsl(var(--primary)) transparent;
 }
 
 .scrollbar-custom::-webkit-scrollbar {
-  width: 8px;
+  width: 6px;
+  height: 6px;
 }
 
 .scrollbar-custom::-webkit-scrollbar-track {
-  background: transparent;
+  background: hsl(var(--muted));
+  border-radius: 10px;
 }
 
 .scrollbar-custom::-webkit-scrollbar-thumb {
-  background-color: hsl(var(--muted-foreground));
+  background-color: hsl(var(--primary));
   border-radius: 20px;
-  border: 2px solid transparent;
+  border: 2px solid hsl(var(--muted));
 }
 
 /* Markdown content styling */
