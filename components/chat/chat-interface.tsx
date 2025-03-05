@@ -60,8 +60,8 @@ const ChatInterface = () => {
           </div>
 
           {/* Chat Area */}
-          <div className="flex flex-col h-full">
-            <ScrollArea className="flex-1 p-4 scrollbar-custom">
+          <div className="flex flex-col h-full relative">
+            <ScrollArea className="flex-1 p-4 overflow-y-auto absolute inset-0 bottom-[65px]">
               <div className="space-y-4">
                 {messages.map((message) => (
                   message.role !== 'system' && (
@@ -110,7 +110,7 @@ const ChatInterface = () => {
                 )}
               </div>
             </ScrollArea>
-            <div className="p-4 border-t border-border/40 bg-background">
+            <div className="p-4 border-t border-border/40 bg-background absolute bottom-0 left-0 right-0">
               <form onSubmit={handleSubmit} className="flex gap-2">
                 <Input
                   disabled={isLoading}
