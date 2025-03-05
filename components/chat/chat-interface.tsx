@@ -35,7 +35,7 @@ const ChatInterface = () => {
   return (
     <Card className="border-border/40">
       <CardContent className="p-0">
-        <div className="grid lg:grid-cols-[280px_1fr] divide-x divide-border/40 h-[600px] overflow-hidden">
+        <div className="grid lg:grid-cols-[280px_1fr] divide-x divide-border/40 h-[600px]">
           {/* Sidebar */}
           <div className="p-4 border-b lg:border-b-0 bg-muted/30">
             <div className="flex items-center gap-3 mb-6">
@@ -60,8 +60,8 @@ const ChatInterface = () => {
           </div>
 
           {/* Chat Area */}
-          <div className="flex flex-col h-full">
-            <ScrollArea className="flex-1 p-4 scrollbar-custom" style={{ height: "calc(600px - 65px)" }}>
+          <div className="flex flex-col h-full overflow-hidden">
+            <ScrollArea className="flex-1 px-4 pt-4 pb-2">
               <div className="space-y-4">
                 {messages.map((message) => (
                   message.role !== 'system' && (
