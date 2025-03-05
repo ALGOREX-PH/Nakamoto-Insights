@@ -81,9 +81,9 @@ const MarketHeader = () => {
         {/* Navigation */}
         <div className="flex flex-wrap items-center gap-4">
           <Button variant="ghost" className="gap-2" asChild>
-            <Link href="/ledger">
+            <Link href="/research">
               <Coins className="h-4 w-4" />
-              Ledger
+              Research
             </Link>
           </Button>
           <Button variant="ghost" className="gap-2" asChild>
