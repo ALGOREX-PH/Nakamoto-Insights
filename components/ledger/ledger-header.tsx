@@ -13,16 +13,16 @@ const LedgerHeader = () => {
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-center gap-6">
             <Button variant="ghost" className="font-medium" asChild>
-              <Link href="/ledger/reports">Reports</Link>
+              <Link href="/research/reports">Reports</Link>
             </Button>
             <Button variant="ghost" className="font-medium" asChild>
-              <Link href="/ledger/research">Research</Link>
+              <Link href="/research/analysis">Analysis</Link>
             </Button>
             <Button variant="ghost" className="font-medium" asChild>
-              <Link href="/ledger/premium">Premium</Link>
+              <Link href="/research/premium">Premium</Link>
             </Button>
             <Button variant="ghost" className="font-medium" asChild>
-              <Link href="/ledger/pricing">Pricing</Link>
+              <Link href="/research/pricing">Pricing</Link>
             </Button>
           </div>
           
