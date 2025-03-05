@@ -1,8 +1,11 @@
 import { Metadata } from "next";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { FileText, ArrowRight } from "lucide-react";
+import { FileText, ArrowRight, Star } from "lucide-react";
 import Link from "next/link";
+import LedgerHeader from "@/components/ledger/ledger-header";
+import FeaturedReports from "@/components/ledger/featured-reports";
+import PricingTiers from "@/components/ledger/pricing-tiers";
 
 export const metadata: Metadata = {
   title: "Research | Nakamoto Insights",
@@ -35,6 +38,8 @@ const researchCategories = [
 export default function ResearchPage() {
   return (
     <div className="min-h-screen bg-background">
+      <LedgerHeader />
+      
       {/* Hero Section */}
       <section className="relative py-20">
         {/* Animated Background */}
@@ -58,9 +63,17 @@ export default function ResearchPage() {
         </div>
       </section>
 
-      {/* Research Categories */}
+      {/* Featured Reports */}
       <section className="py-12">
         <div className="container">
+          <FeaturedReports />
+        </div>
+      </section>
+      
+      {/* Research Categories */}
+      <section className="py-12 bg-muted/30 border-y border-border/40">
+        <div className="container">
+          <h2 className="text-2xl font-bold mb-6">Research Categories</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {researchCategories.map((category, index) => (
               <Card key={index} className="group hover:shadow-lg transition-shadow">
@@ -82,6 +95,13 @@ export default function ResearchPage() {
               </Card>
             ))}
           </div>
+        </div>
+      </section>
+      
+      {/* Pricing Tiers */}
+      <section className="py-12">
+        <div className="container">
+          <PricingTiers />
         </div>
       </section>
     </div>
