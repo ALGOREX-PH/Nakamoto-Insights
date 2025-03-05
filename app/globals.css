@@ -76,23 +76,23 @@
 /* Scrollbar styling */
 .scrollbar-custom {
   scrollbar-width: thin;
-  scrollbar-color: hsl(var(--primary)) transparent;
+  scrollbar-color: hsl(var(--muted-foreground)) hsl(var(--muted));
+  overflow-y: auto;
 }
 
 .scrollbar-custom::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 8px;
 }
 
 .scrollbar-custom::-webkit-scrollbar-track {
   background: hsl(var(--muted));
-  border-radius: 10px;
 }
 
 .scrollbar-custom::-webkit-scrollbar-thumb {
-  background-color: hsl(var(--primary));
+  background-color: hsl(var(--muted-foreground));
   border-radius: 20px;
-  border: 2px solid hsl(var(--muted));
+  border: 2px solid transparent;
+  background-clip: padding-box;
 }
 
 /* Markdown content styling */
