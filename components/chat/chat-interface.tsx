@@ -35,7 +35,7 @@ const ChatInterface = () => {
   return (
     <Card className="border-border/40">
       <CardContent className="p-0">
-        <div className="grid lg:grid-cols-[280px_1fr] divide-x divide-border/40 h-[600px]">
+        <div className="grid lg:grid-cols-[280px_1fr] divide-x divide-border/40 h-[600px] overflow-hidden">
           {/* Sidebar */}
           <div className="p-4 border-b lg:border-b-0 bg-muted/30">
             <div className="flex items-center gap-3 mb-6">
@@ -61,7 +61,7 @@ const ChatInterface = () => {
 
           {/* Chat Area */}
           <div className="flex flex-col h-full">
-            <ScrollArea className="flex-1 p-4 [&>div]:h-full [&_[data-radix-scroll-area-viewport]]:h-full">
+            <ScrollArea className="flex-1 p-4 scrollbar-custom">
               <div className="space-y-4">
                 {messages.map((message) => (
                   message.role !== 'system' && (
@@ -110,7 +110,7 @@ const ChatInterface = () => {
                 )}
               </div>
             </ScrollArea>
-            <div className="p-4 border-t border-border/40">
+            <div className="p-4 border-t border-border/40 bg-background">
               <form onSubmit={handleSubmit} className="flex gap-2">
                 <Input
                   disabled={isLoading}
