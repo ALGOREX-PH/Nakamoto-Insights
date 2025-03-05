@@ -1,7 +1,15 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { LayoutDashboard, LineChart, Wallet, Image, Search } from "lucide-react";
+import { 
+  LayoutDashboard, 
+  Wallet, 
+  Coins, 
+  ChartBar, 
+  Mail, 
+  Calendar, 
+  Users 
+} from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
@@ -73,27 +81,39 @@ const MarketHeader = () => {
         {/* Navigation */}
         <div className="flex flex-wrap items-center gap-4">
           <Button variant="ghost" className="gap-2" asChild>
-            <Link href="/market-analysis">
+            <Link href="/ledger">
+              <Coins className="h-4 w-4" />
+              Ledger
+            </Link>
+          </Button>
+          <Button variant="ghost" className="gap-2" asChild>
+            <Link href="/tokenomics">
+              <ChartBar className="h-4 w-4" />
+              Tokenomics
+            </Link>
+          </Button>
+          <Button variant="ghost" className="gap-2" asChild>
+            <Link href="/newsletter">
+              <Mail className="h-4 w-4" />
+              Newsletter
+            </Link>
+          </Button>
+          <Button variant="ghost" className="gap-2" asChild>
+            <Link href="/events">
+              <Calendar className="h-4 w-4" />
+              Events
+            </Link>
+          </Button>
+          <Button variant="ghost" className="gap-2" asChild>
+            <Link href="/community">
+              <Users className="h-4 w-4" />
+              Community
+            </Link>
+          </Button>
+          <Button variant="ghost" className="gap-2 ml-auto" asChild>
+            <Link href="/dashboard">
               <LayoutDashboard className="h-4 w-4" />
               Dashboard
-            </Link>
-          </Button>
-          <Button variant="ghost" className="gap-2" asChild>
-            <Link href="/market-analysis/prices">
-              <LineChart className="h-4 w-4" />
-              Live Prices
-            </Link>
-          </Button>
-          <Button variant="ghost" className="gap-2" asChild>
-            <Link href="/market-analysis/nfts">
-              <Image className="h-4 w-4" />
-              NFTs
-            </Link>
-          </Button>
-          <Button variant="ghost" className="gap-2" asChild>
-            <Link href="/market-analysis/insights">
-              <Search className="h-4 w-4" />
-              Insights
             </Link>
           </Button>
         </div>
