@@ -3,7 +3,7 @@
 import { useChat } from "ai/react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { Avatar } from "@/components/ui/avatar";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Send, Bot, User, Crown, Loader2 } from "lucide-react";
@@ -18,7 +18,7 @@ const INITIAL_MESSAGE = {
 const ChatInterface = () => {
   const { messages, input, handleInputChange, handleSubmit, isLoading } = useChat({
     api: '/api/chat',
-    initialMessages: [INITIAL_MESSAGE],
+    initialMessages: [],
     onError: (error) => {
       console.error('Chat error:', error);
       alert('Error: Failed to get a response. Please try again.');
@@ -112,13 +112,14 @@ const ChatInterface = () => {
             </ScrollArea>
             <div className="p-4 border-t border-border/40 bg-background">
               <form onSubmit={handleSubmit} className="flex gap-2">
-                <Input
+                <Textarea
                   disabled={isLoading}
                   placeholder="Ask anything about crypto..."
                   onKeyDown={handleKeyDown}
                   value={input}
                   onChange={handleInputChange}
-                  className="flex-1"
+                  className="flex-1 min-h-[44px] max-h-[200px] resize-none"
+                  rows={1}
                 />
                 <Button type="submit" size="icon" disabled={isLoading}>
                   {isLoading ? (
