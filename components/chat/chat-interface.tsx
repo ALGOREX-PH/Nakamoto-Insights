@@ -120,7 +120,7 @@ const ChatInterface = () => {
         }
       }
     } catch (error) {
-      if (error.name === 'AbortError') return;
+      if (error instanceof Error && error.name === 'AbortError') return;
       console.error('Chat error:', error);
       alert('Failed to get a response. Please try again.');
     } finally {
