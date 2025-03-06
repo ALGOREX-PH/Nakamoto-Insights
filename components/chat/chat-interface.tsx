@@ -1,6 +1,8 @@
 "use client"
 
-import { useChat } from "ai/react";
+"use client";
+
+import { useState, useRef, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -9,26 +11,128 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Send, Bot, User, Crown, Loader2 } from "lucide-react";
 import ReactMarkdown from 'react-markdown';
 
-const INITIAL_MESSAGE = {
-  id: 'initial-message',
+interface Message {
+  id: string;
+  role: 'user' | 'assistant' | 'system';
+  content: string;
+}
+
+const initialMessage: Message = {
+  id: 'welcome',
   role: 'assistant',
-  content: 'Hello! I\'m Alex Nakamoto, your AI crypto analyst. How can I help you understand the crypto markets today?'
+  content: "Hello! I'm Alex Nakamoto, your AI crypto analyst. How can I help you understand the crypto markets today?"
 };
 
 const ChatInterface = () => {
-  const { messages, input, handleInputChange, handleSubmit, isLoading } = useChat({
-    api: '/api/chat',
-    initialMessages: [],
-    onError: (error) => {
-      console.error('Chat error:', error);
-      alert('Error: Failed to get a response. Please try again.');
+  const [messages, setMessages] = useState<Message[]>([initialMessage]);
+  const [input, setInput] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const abortControllerRef = useRef<AbortController | null>(null);
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setInput(e.target.value);
+  };
+
+  useEffect(() => {
+    return () => {
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+    };
+  }, []);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!input.trim() || isLoading) return;
+
+    const userMessage: Message = {
+      id: Date.now().toString(),
+      role: 'user',
+      content: input.trim()
+    };
+
+    setMessages(prev => [...prev, userMessage]);
+    setInput('');
+    setIsLoading(true);
+
+    // Cancel any ongoing request
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
     }
-  });
+
+    // Create new abort controller for this request
+    abortControllerRef.current = new AbortController();
+
+    try {
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          messages: messages.concat(userMessage)
+        }),
+        signal: abortControllerRef.current.signal
+      });
+
+      if (!response.ok) throw new Error('Failed to get response');
+
+      const reader = response.body?.getReader();
+      if (!reader) throw new Error('No response body');
+
+      let assistantMessage: Message = {
+        id: Date.now().toString(),
+        role: 'assistant',
+        content: ''
+      };
+
+      setMessages(prev => [...prev, assistantMessage]);
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        // Convert the chunk to text
+        const chunk = new TextDecoder().decode(value);
+        const lines = chunk.split('\n');
+
+        for (const line of lines) {
+          if (line.startsWith('data: ')) {
+            const data = line.slice(6);
+            if (data === '[DONE]') continue;
+
+            try {
+              const json = JSON.parse(data);
+              const content = json.choices[0]?.delta?.content || '';
+              assistantMessage.content += content;
+
+              setMessages(prev => 
+                prev.map(msg => 
+                  msg.id === assistantMessage.id 
+                    ? assistantMessage 
+                    : msg
+                )
+              );
+            } catch (e) {
+              console.error('Error parsing chunk:', e);
+            }
+          }
+        }
+      }
+    } catch (error) {
+      if (error.name === 'AbortError') return;
+      console.error('Chat error:', error);
+      alert('Failed to get a response. Please try again.');
+    } finally {
+      setIsLoading(false);
+      abortControllerRef.current = null;
+    }
+  };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
-      handleSubmit(e as any);
+      handleSubmit(e);
     }
   };
 

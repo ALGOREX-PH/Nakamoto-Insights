@@ -1,6 +1,3 @@
-import { OpenAI } from 'openai';
-import { OpenAIStream, StreamingTextResponse } from 'ai';
- 
 export const runtime = 'edge';
 
 export async function POST(req: Request) {
@@ -16,24 +13,38 @@ export async function POST(req: Request) {
       return new Response("Invalid messages format", { status: 400 });
     }
 
-    const openai = new OpenAI({
-      apiKey: process.env.OPENAI_API_KEY,
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
+      },
+      body: JSON.stringify({
+        model: 'gpt-4-turbo-preview',
+        messages: [
+          {
+            role: 'system',
+            content: "You are Alex Nakamoto, a cryptocurrency expert and analyst. Provide accurate, technical insights about blockchain and crypto without financial advice or price predictions. Focus on education, security, and factual analysis.",
+          },
+          ...messages,
+        ],
+        stream: true,
+      }),
     });
 
-    const response = await openai.chat.completions.create({
-      model: 'gpt-4-turbo-preview',
-      stream: true,
-      messages: [
-        {
-          role: 'system',
-          content: "You are Alex Nakamoto, a cryptocurrency expert and analyst. Provide accurate, technical insights about blockchain and crypto without financial advice or price predictions. Focus on education, security, and factual analysis."
-        },
-        ...messages,
-      ],
-    });
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || 'Failed to fetch from OpenAI');
+    }
  
-    const stream = OpenAIStream(response);
-    return new StreamingTextResponse(stream);
+    // Transform the response into a readable stream
+    return new Response(response.body, {
+      headers: {
+        'Content-Type': 'text/event-stream',
+        'Cache-Control': 'no-cache',
+        'Connection': 'keep-alive',
+      },
+    });
   } catch (error) {
     console.error('Error:', error);
     return new Response("An error occurred", { status: 500 });
