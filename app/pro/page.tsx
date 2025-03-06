@@ -3,6 +3,9 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Check, Upload, ChartBar, Brain, Shield } from "lucide-react";
 import Link from "next/link";
+import HeroSection from "@/components/pro/hero-section";
+import PricingSection from "@/components/pro/pricing-section";
+import FeaturesSection from "@/components/pro/features-section";
 
 export const metadata: Metadata = {
   title: "Premium Membership | Nakamoto Insights",
