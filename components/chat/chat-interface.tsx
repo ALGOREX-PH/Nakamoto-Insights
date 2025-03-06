@@ -129,7 +129,7 @@ const ChatInterface = () => {
     }
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       handleSubmit(e);
@@ -222,7 +222,7 @@ const ChatInterface = () => {
                   onKeyDown={handleKeyDown}
                   value={input}
                   onChange={handleInputChange}
-                  className="flex-1 min-h-[44px] max-h-[200px] resize-none"
+                  className="flex-1 min-h-[44px] max-h-[200px] resize-none overflow-hidden"
                   rows={1}
                 />
                 <Button type="submit" size="icon" disabled={isLoading}>
