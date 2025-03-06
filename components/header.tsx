@@ -3,8 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { 
-  Bitcoin, 
+import {  
   Menu, 
   X, 
   TrendingUp, 
@@ -44,8 +43,16 @@ const Header = () => {
       <div className="container flex h-16 items-center justify-between px-4 sm:px-6 mx-auto max-w-full">
         <div className="flex items-center gap-2">
           <Link href="/" className="flex items-center gap-2">
-            <Bitcoin className="h-7 w-7 sm:h-8 sm:w-8 text-chart-1" />
-            <span className="font-bold text-lg sm:text-xl">Nakamoto Insights</span>
+            <div className="relative h-7 w-7 sm:h-8 sm:w-8">
+              <div className="absolute inset-0 bg-gradient-to-br from-chart-1 via-chart-2 to-chart-4 rounded-full transform rotate-12"></div>
+              <div className="absolute inset-[2px] bg-background rounded-full flex items-center justify-center">
+                <span className="text-chart-1 font-bold text-lg sm:text-xl transform -rotate-12">₿</span>
+              </div>
+            </div>
+            <span className="font-bold text-lg sm:text-xl">
+              <span className="bg-clip-text text-transparent bg-gradient-to-r from-chart-1 via-chart-2 to-chart-4">Nakamoto</span>
+              <span className="ml-1">Insights</span>
+            </span>
           </Link>
         </div>
 
