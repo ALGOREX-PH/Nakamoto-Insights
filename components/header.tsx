@@ -63,6 +63,9 @@ const Header = () => {
           <Link href="/blog" className="text-sm lg:text-base text-muted-foreground hover:text-foreground transition-colors">
             Blog
           </Link>
+          <Link href="/community" className="text-sm lg:text-base text-muted-foreground hover:text-foreground transition-colors">
+            Community
+          </Link>
           <Link href="/about" className="text-sm lg:text-base text-muted-foreground hover:text-foreground transition-colors">
             About
           </Link>
@@ -116,6 +119,14 @@ const Header = () => {
             >
               <MessageSquare className="h-5 w-5 text-chart-4" />
               <span>Blog</span>
+            </Link>
+            <Link 
+              href="/about" 
+              className="flex items-center gap-2 p-3 hover:bg-muted rounded-md"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              <User className="h-5 w-5 text-chart-5" />
+              <span>Community</span>
             </Link>
             <Link 
               href="/about" 
