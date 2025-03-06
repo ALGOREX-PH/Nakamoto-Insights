@@ -1,5 +1,5 @@
 import { OpenAI } from 'openai';
-import { OpenAIStream, StreamingTextResponse } from '@vercel/ai';
+import { OpenAIStream, StreamingTextResponse } from 'ai';;
 
 export const runtime = 'edge';
 
