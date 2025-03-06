@@ -2,6 +2,7 @@
 
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
 import { Calendar, Video, MessageSquare } from "lucide-react";
 import { useState } from "react";
 
@@ -44,8 +45,10 @@ const UpcomingEvents = () => {
     <div>
       <div className="flex justify-between items-center mb-6 flex-wrap gap-4">
         <h2 className="text-2xl font-bold">Upcoming Events</h2>
-        <Button variant="outline" size="sm">
+        <Button variant="outline" size="sm" asChild>
+          <Link href="/events">
           View all events
+          </Link>
         </Button>
       </div>
       
