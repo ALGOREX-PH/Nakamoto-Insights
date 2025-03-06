@@ -79,7 +79,9 @@ const Header = () => {
           <Link href="/about" className="text-sm lg:text-base text-muted-foreground hover:text-foreground transition-colors">
             About
           </Link>
-          <Button variant="default" size="sm" className="ml-2">Subscribe</Button>
+          <Button variant="default" size="sm" className="ml-2" asChild>
+            <Link href="/pro">Subscribe</Link>
+          </Button>
         </nav>
 
         {/* Mobile Menu Button */}
@@ -154,9 +156,11 @@ const Header = () => {
               <User className="h-5 w-5 text-chart-5" />
               <span>About</span>
             </Link>
-            <Button className="w-full mt-4" onClick={() => setIsMenuOpen(false)}>
-              Subscribe
-            </Button>
+            <Link href="/pro">
+              <Button className="w-full mt-4" onClick={() => setIsMenuOpen(false)}>
+                Subscribe
+              </Button>
+            </Link>
           </nav>
         </div>
       )}
