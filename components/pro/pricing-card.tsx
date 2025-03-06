@@ -6,7 +6,7 @@ import { Check, DivideIcon as LucideIcon } from "lucide-react";
 
 interface PricingCardProps {
   title: string;
-  icon: LucideIcon;
+  icon: typeof LucideIcon;
   price: string;
   features: string[];
   buttonText: string;
