@@ -2,7 +2,7 @@ import { Metadata } from "next";
 import HeroSection from "@/components/about/hero-section";
 import BioSection from "@/components/about/bio-section";
 import ContactForm from "@/components/about/contact-form";
-
+import { Card, CardContent } from "@/components/ui/card";
 export const metadata: Metadata = {
   title: "About Alex Nakamoto | Nakamoto Insights",
   description: "Learn about Alex Nakamoto's journey in blockchain technology and connect for speaking engagements, consultations, and partnerships.",
