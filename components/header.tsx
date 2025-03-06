@@ -57,6 +57,9 @@ const Header = () => {
           <Link href="/research" className="text-sm lg:text-base text-muted-foreground hover:text-foreground transition-colors">
             Research
           </Link>
+          <Link href="/tokenomics" className="text-sm lg:text-base text-muted-foreground hover:text-foreground transition-colors">
+            Tokenomics
+          </Link>
           <Link href="/education" className="text-sm lg:text-base text-muted-foreground hover:text-foreground transition-colors">
             Education
           </Link>
@@ -103,6 +106,14 @@ const Header = () => {
             >
               <BookOpen className="h-5 w-5 text-chart-2" />
               <span>Research</span>
+            </Link>
+            <Link 
+              href="/tokenomics" 
+              className="flex items-center gap-2 p-3 hover:bg-muted rounded-md"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              <TrendingUp className="h-5 w-5 text-chart-3" />
+              <span>Tokenomics</span>
             </Link>
             <Link 
               href="/education" 
