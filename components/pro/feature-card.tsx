@@ -1,11 +1,10 @@
 "use client";
 
 import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { DivideIcon as LucideIcon } from "lucide-react";
 
 interface FeatureCardProps {
-  icon: LucideIcon;
+  icon: typeof LucideIcon;
   title: string;
   description: string;
   colorClass: string;
