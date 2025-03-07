@@ -152,7 +152,7 @@ const ChatInterface = () => {
   return (
     <Card className="border-border/40">
       <CardContent className="p-0">
-        <div className="grid lg:grid-cols-[280px_1fr] divide-x divide-border/40 h-[600px]">
+        <div className="grid lg:grid-cols-[300px_1fr] divide-x divide-border/40 h-[calc(80vh-57px)]">
           {/* Sidebar */}
           <div className="p-4 border-b lg:border-b-0 bg-muted/30">
             <div className="flex items-center gap-3 mb-6">
@@ -178,7 +178,7 @@ const ChatInterface = () => {
 
           {/* Chat Area */}
           <div className="flex flex-col h-full overflow-hidden">
-            <ScrollArea className="flex-1 px-4 pt-4 pb-2">
+            <ScrollArea className="flex-1 p-6">
               <div className="space-y-4">
                 {messages.map((message) => (
                   message.role !== 'system' && (
@@ -196,11 +196,11 @@ const ChatInterface = () => {
                     <div
                       className={`rounded-lg p-3 max-w-[80%] ${
                         message.role === "user"
-                          ? "bg-primary text-primary-foreground"
-                          : "bg-muted"
+                          ? "bg-primary/90 text-primary-foreground text-base"
+                          : "bg-muted/50 text-base"
                       }`}
                     >
-                      <div className="text-sm prose dark:prose-invert max-w-none prose-sm">
+                      <div className="prose dark:prose-invert max-w-none">
                         <ReactMarkdown>{message.content}</ReactMarkdown>
                       </div>
                     </div>
@@ -209,14 +209,14 @@ const ChatInterface = () => {
                         <User className="h-5 w-5" />
                       </Avatar>
                     )}
-                  </div>)
-                ))}
+                  </div>))
+                )}
                 {isLoading && (
                   <div className="flex gap-3">
                     <Avatar className="h-8 w-8">
                       <Bot className="h-5 w-5 text-primary" />
                     </Avatar>
-                    <div className="bg-muted rounded-lg p-3">
+                    <div className="bg-muted/50 rounded-lg p-3">
                       <div className="flex gap-1">
                         <span className="w-2 h-2 bg-primary/60 rounded-full animate-bounce" />
                         <span className="w-2 h-2 bg-primary/60 rounded-full animate-bounce [animation-delay:0.2s]" />
@@ -227,7 +227,7 @@ const ChatInterface = () => {
                 )}
               </div>
             </ScrollArea>
-            <div className="p-4 border-t border-border/40 bg-background">
+            <div className="p-4 border-t border-border/40 bg-card">
               <form onSubmit={handleSubmit} className="flex gap-2">
                 <Textarea
                   disabled={isLoading}
@@ -235,7 +235,7 @@ const ChatInterface = () => {
                   onKeyDown={handleKeyDown}
                   value={input}
                   onChange={handleInputChange}
-                  className="flex-1 min-h-[44px] max-h-[200px] resize-none overflow-hidden"
+                  className="flex-1 min-h-[44px] max-h-[200px] resize-none overflow-hidden bg-background"
                   rows={1}
                 />
                 <Button type="submit" size="icon" disabled={isLoading}>
