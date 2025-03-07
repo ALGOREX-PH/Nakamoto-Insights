@@ -1,5 +1,6 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
 
+export const runtime = 'edge';
 
 export async function POST(req: Request) {
   // Check if any API key exists
@@ -33,7 +34,7 @@ export async function POST(req: Request) {
           },
           body: JSON.stringify({
             model: 'gpt-4-turbo-preview',
-            max_tokens: 1000,
+            max_tokens: 2500,
             messages: [
               {
                 role: 'system',
@@ -64,10 +65,19 @@ export async function POST(req: Request) {
     // Fallback to Gemini if OpenAI failed or not available
     if (process.env.GEMINI_API_KEY) {
       const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-      const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
+      const model = genAI.getGenerativeModel({ model: 'gemini-pro' });
+      
+      const systemPrompt = "You are Alex Nakamoto, a cryptocurrency expert and analyst. Provide accurate, technical insights about blockchain and crypto without financial advice or price predictions. Focus on education, security, and factual analysis.";
+      const userMessages = messages.map(msg => msg.content).join('\n');
+      const fullPrompt = `${systemPrompt}\n\nUser Messages:\n${userMessages}`;
 
-      const prompt = messages.map(msg => msg.content).join('\n');
-      const result = await model.generateContentStream(prompt);
+      const result = await model.generateContentStream({
+        contents: [{ role: 'user', parts: [{ text: fullPrompt }] }],
+        generationConfig: {
+          maxOutputTokens: 2500,
+          temperature: 0.7,
+        },
+      });
 
       const stream = new ReadableStream({
         async start(controller) {
