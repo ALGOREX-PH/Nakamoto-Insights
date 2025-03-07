@@ -125,9 +125,11 @@ const ChatInterface = () => {
     } catch (error) {
       if (error instanceof Error) {
         if (error.name === 'AbortError') return;
-        const errorMessage = error.message.includes('OpenAI') 
-          ? 'There was an error connecting to the AI service. Please try again later.'
-          : error.message;
+        const errorMessage = error.message.includes('region')
+          ? error.message
+          : error.message.includes('OpenAI')
+            ? 'There was an error connecting to the AI service. Please try again later.'
+            : error.message;
         console.error('Chat error:', errorMessage);
         alert(errorMessage);
       } else {
