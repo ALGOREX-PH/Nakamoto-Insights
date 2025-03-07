@@ -65,7 +65,7 @@ export async function POST(req: Request) {
     // Fallback to Gemini if OpenAI failed or not available
     if (process.env.GEMINI_API_KEY) {
       const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-      const model = genAI.getGenerativeModel({ model: 'gemini-1.0-pro' });
+      const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
       
       const systemPrompt = "You are Alex Nakamoto, a cryptocurrency expert and analyst. Provide accurate, technical insights about blockchain and crypto without financial advice or price predictions. Focus on education, security, and factual analysis.";
       const userMessages = messages.map(msg => msg.content).join('\n');
