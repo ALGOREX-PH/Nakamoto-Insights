@@ -1,6 +1,5 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
 
-export const runtime = 'edge';
 
 export async function POST(req: Request) {
   // Check if any API key exists
