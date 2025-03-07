@@ -65,7 +65,7 @@ export async function POST(req: Request) {
     // Fallback to Gemini if OpenAI failed or not available
     if (process.env.GEMINI_API_KEY) {
       const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-      const model = genAI.getGenerativeModel({ model: 'gemini-pro' });
+      const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
 
       const prompt = messages.map(msg => msg.content).join('\n');
       const result = await model.generateContentStream(prompt);
