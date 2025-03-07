@@ -76,8 +76,8 @@ const ChatInterface = () => {
       });
 
       if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || 'Failed to get response');
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to get response');
       }
 
       const reader = response.body?.getReader();
@@ -125,11 +125,14 @@ const ChatInterface = () => {
     } catch (error) {
       if (error instanceof Error) {
         if (error.name === 'AbortError') return;
-        console.error('Chat error:', error.message);
-        alert(error.message);
+        const errorMessage = error.message.includes('OpenAI') 
+          ? 'There was an error connecting to the AI service. Please try again later.'
+          : error.message;
+        console.error('Chat error:', errorMessage);
+        alert(errorMessage);
       } else {
-      console.error('Chat error:', error);
-      alert('Failed to get a response. Please try again.');
+        console.error('Chat error:', error);
+        alert('An unexpected error occurred. Please try again.');
       }
     } finally {
       setIsLoading(false);
