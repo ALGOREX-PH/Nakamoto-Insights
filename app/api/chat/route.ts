@@ -1,16 +1,23 @@
 export const runtime = 'edge';
 
 export async function POST(req: Request) {
+  const errorResponse = (message: string, status: number = 500) => {
+    return new Response(JSON.stringify({ error: message }), { 
+      status,
+      headers: { 'Content-Type': 'application/json' }
+    });
+  };
+
   // Check if API key exists
   if (!process.env.OPENAI_API_KEY) {
-    return new Response("Missing API key", { status: 400 });
+    return errorResponse("Missing API key", 400);
   }
 
   try {
     const { messages } = await req.json();
 
     if (!messages || !Array.isArray(messages)) {
-      return new Response("Invalid messages format", { status: 400 });
+      return errorResponse("Invalid messages format", 400);
     }
 
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
@@ -33,8 +40,8 @@ export async function POST(req: Request) {
     });
 
     if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.message || 'Failed to fetch from OpenAI');
+      const error = await response.json().catch(() => ({ message: 'Unknown error' }));
+      return errorResponse(error.message || 'Failed to fetch from OpenAI');
     }
  
     // Transform the response into a readable stream
@@ -47,6 +54,6 @@ export async function POST(req: Request) {
     });
   } catch (error) {
     console.error('Error:', error);
-    return new Response("An error occurred", { status: 500 });
+    return errorResponse('An error occurred while processing your request');
   }
 }
