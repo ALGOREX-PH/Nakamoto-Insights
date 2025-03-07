@@ -1,45 +1,65 @@
-export const runtime = 'edge';
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
 export async function POST(req: Request) {
-  // Check if API key exists
-  if (!process.env.OPENAI_API_KEY) {
+  if (!process.env.GEMINI_API_KEY) {
     return new Response(
-      JSON.stringify({ error: "OpenAI API key is missing" }),
+      JSON.stringify({ error: "Gemini API key is missing" }),
       { status: 400, headers: { 'Content-Type': 'application/json' } }
     );
   }
 
   try {
     const { messages } = await req.json();
-
     if (!messages || !Array.isArray(messages)) {
       return new Response(
         JSON.stringify({ error: "Invalid messages format" }),
         { status: 400, headers: { 'Content-Type': 'application/json' } }
       );
     }
-
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'OpenAI-Beta': 'assistants=v1',
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
-        'OpenAI-Organization': process.env.OPENAI_ORG_ID || '',
-      },
-      body: JSON.stringify({
-        model: 'gpt-4-turbo-preview',
-        max_tokens: 1000,
-        messages: [
-          {
-            role: 'system',
-            content: "You are Alex Nakamoto, a cryptocurrency expert and analyst. Provide accurate, technical insights about blockchain and crypto without financial advice or price predictions. Focus on education, security, and factual analysis.",
-          },
-          ...messages,
-        ],
-        stream: true,
+    
+    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+    const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+    
+    const chat = model.startChat({
+      history: messages.map(msg => ({
+        role: msg.role === "user" ? "user" : "model",
+        parts: msg.content,
+      })),
+      generationConfig: {
+        maxOutputTokens: 1000,
         temperature: 0.7,
+      },
+    });
+
+    const result = await chat.sendMessage(
+      "You are Alex Nakamoto, a cryptocurrency expert and analyst. " +
+      messages[messages.length - 1].content
+    );
+    const response = await result.response;
+    
+    return new Response(
+      JSON.stringify({
+        choices: [{
+          delta: { content: response.text() },
+        }],
       }),
+      { 
+        headers: { 
+          'Content-Type': 'application/json',
+          'Cache-Control': 'no-cache',
+        } 
+      }
+    );
+  } catch (error) {
+    console.error('Error:', error);
+    return new Response(
+      JSON.stringify({ 
+        error: error instanceof Error ? error.message : 'An error occurred while processing your request'
+      }),
+      { status: 500, headers: { 'Content-Type': 'application/json' } }
+    );
+  }
+}
     });
 
     if (!response.ok) {
