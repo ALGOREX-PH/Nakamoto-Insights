@@ -22,11 +22,14 @@ export async function POST(req: Request) {
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
+        'OpenAI-Beta': 'assistants=v1',
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
+        'OpenAI-Organization': process.env.OPENAI_ORG_ID || '',
       },
       body: JSON.stringify({
         model: 'gpt-4-turbo-preview',
+        max_tokens: 1000,
         messages: [
           {
             role: 'system',
@@ -35,12 +38,17 @@ export async function POST(req: Request) {
           ...messages,
         ],
         stream: true,
+        temperature: 0.7,
       }),
     });
 
     if (!response.ok) {
       const error = await response.json();
-      throw new Error(error.error?.message || error.message || 'OpenAI API request failed');
+      const errorMessage = error.error?.message || error.message;
+      if (errorMessage?.includes('region') || errorMessage?.includes('territory') || errorMessage?.includes('country')) {
+        throw new Error('This service is not available in your region. Please try using a VPN.');
+      }
+      throw new Error(errorMessage || 'OpenAI API request failed');
     }
  
     // Transform the response into a readable stream
