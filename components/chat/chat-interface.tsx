@@ -75,7 +75,10 @@ const ChatInterface = () => {
         signal: abortControllerRef.current.signal
       });
 
-      if (!response.ok) throw new Error('Failed to get response');
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'Failed to get response');
+      }
 
       const reader = response.body?.getReader();
       if (!reader) throw new Error('No response body');
@@ -120,9 +123,14 @@ const ChatInterface = () => {
         }
       }
     } catch (error) {
-      if (error instanceof Error && error.name === 'AbortError') return;
+      if (error instanceof Error) {
+        if (error.name === 'AbortError') return;
+        console.error('Chat error:', error.message);
+        alert(error.message);
+      } else {
       console.error('Chat error:', error);
       alert('Failed to get a response. Please try again.');
+      }
     } finally {
       setIsLoading(false);
       abortControllerRef.current = null;
