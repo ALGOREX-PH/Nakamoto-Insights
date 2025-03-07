@@ -1,23 +1,22 @@
 export const runtime = 'edge';
 
 export async function POST(req: Request) {
-  const errorResponse = (message: string, status: number = 500) => {
-    return new Response(JSON.stringify({ error: message }), { 
-      status,
-      headers: { 'Content-Type': 'application/json' }
-    });
-  };
-
   // Check if API key exists
   if (!process.env.OPENAI_API_KEY) {
-    return errorResponse("Missing API key", 400);
+    return new Response(
+      JSON.stringify({ error: "OpenAI API key is missing" }),
+      { status: 400, headers: { 'Content-Type': 'application/json' } }
+    );
   }
 
   try {
     const { messages } = await req.json();
 
     if (!messages || !Array.isArray(messages)) {
-      return errorResponse("Invalid messages format", 400);
+      return new Response(
+        JSON.stringify({ error: "Invalid messages format" }),
+        { status: 400, headers: { 'Content-Type': 'application/json' } }
+      );
     }
 
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
@@ -40,8 +39,8 @@ export async function POST(req: Request) {
     });
 
     if (!response.ok) {
-      const error = await response.json().catch(() => ({ message: 'Unknown error' }));
-      return errorResponse(error.message || 'Failed to fetch from OpenAI');
+      const error = await response.json();
+      throw new Error(error.error?.message || error.message || 'OpenAI API request failed');
     }
  
     // Transform the response into a readable stream
@@ -54,6 +53,9 @@ export async function POST(req: Request) {
     });
   } catch (error) {
     console.error('Error:', error);
-    return errorResponse('An error occurred while processing your request');
+    return new Response(
+      JSON.stringify({ error: error instanceof Error ? error.message : 'An error occurred while processing your request' }),
+      { status: 500, headers: { 'Content-Type': 'application/json' } }
+    );
   }
 }
