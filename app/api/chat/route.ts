@@ -33,7 +33,7 @@ export async function POST(req: Request) {
           },
           body: JSON.stringify({
             model: 'gpt-4-turbo-preview',
-            max_tokens: 2500,
+            max_tokens: 7500,
             messages: [
               {
                 role: 'system',
@@ -73,7 +73,7 @@ export async function POST(req: Request) {
       const result = await model.generateContentStream({
         contents: [{ role: 'user', parts: [{ text: fullPrompt }] }],
         generationConfig: {
-          maxOutputTokens: 2500,
+          maxOutputTokens: 7500,
           temperature: 0.7,
         },
       });
