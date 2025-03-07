@@ -74,7 +74,7 @@ export async function POST(req: Request) {
       const result = await model.generateContentStream({
         contents: [{ role: 'user', parts: [{ text: fullPrompt }] }],
         generationConfig: {
-          maxTokens: 2500,
+          maxOutputTokens: 2500,
           temperature: 0.7,
         },
       });
