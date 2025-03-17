@@ -1,13 +1,5 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
-import { Voice, VoiceSettings } from 'elevenlabs-node';
-
 export const runtime = 'edge';
-
-const voice = new Voice({
-  apiKey: process.env.ELEVENLABS_API_KEY || '',
-  voiceId: '21m00Tcm4TlvDq8ikWAM',
-  settings: new VoiceSettings(0.5, 0.5, 0.5)
-});
 
 export async function POST(req: Request) {
   // Check if any API key exists
