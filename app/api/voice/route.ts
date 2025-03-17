@@ -1,12 +1,4 @@
-import { Voice, VoiceSettings } from 'elevenlabs-node';
-
 export const runtime = 'edge';
-
-const voice = new Voice({
-  apiKey: process.env.ELEVENLABS_API_KEY || '',
-  voiceId: '21m00Tcm4TlvDq8ikWAM',
-  settings: new VoiceSettings(0.5, 0.5, 0.5)
-});
 
 export async function POST(req: Request) {
   try {
@@ -19,9 +11,40 @@ export async function POST(req: Request) {
       );
     }
 
-    const audioBuffer = await voice.generateAudio(text);
-    
-    return new Response(audioBuffer, {
+    if (!process.env.ELEVENLABS_API_KEY) {
+      return new Response(
+        JSON.stringify({ error: "ElevenLabs API key is not configured" }),
+        { status: 500, headers: { 'Content-Type': 'application/json' } }
+      );
+    }
+
+    const response = await fetch(
+      'https://api.elevenlabs.io/v1/text-to-speech/21m00Tcm4TlvDq8ikWAM/stream',
+      {
+        method: 'POST',
+        headers: {
+          'Accept': 'audio/mpeg',
+          'Content-Type': 'application/json',
+          'xi-api-key': process.env.ELEVENLABS_API_KEY
+        },
+        body: JSON.stringify({
+          text,
+          model_id: 'eleven_monolingual_v1',
+          voice_settings: {
+            stability: 0.5,
+            similarity_boost: 0.5,
+            style: 0.5,
+            use_speaker_boost: true
+          }
+        })
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error(`ElevenLabs API error: ${response.status}`);
+    }
+
+    return new Response(response.body, {
       headers: {
         'Content-Type': 'audio/mpeg',
         'Cache-Control': 'no-cache'
