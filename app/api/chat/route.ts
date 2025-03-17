@@ -1,5 +1,13 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
+import { Voice, VoiceSettings } from 'elevenlabs-node';
 
+export const runtime = 'edge';
+
+const voice = new Voice({
+  apiKey: process.env.ELEVENLABS_API_KEY || '',
+  voiceId: '21m00Tcm4TlvDq8ikWAM',
+  settings: new VoiceSettings(0.5, 0.5, 0.5)
+});
 
 export async function POST(req: Request) {
   // Check if any API key exists
@@ -33,7 +41,7 @@ export async function POST(req: Request) {
           },
           body: JSON.stringify({
             model: 'gpt-4-turbo-preview',
-            max_tokens: 7500,
+            max_tokens: 2500,
             messages: [
               {
                 role: 'system',
@@ -64,7 +72,7 @@ export async function POST(req: Request) {
     // Fallback to Gemini if OpenAI failed or not available
     if (process.env.GEMINI_API_KEY) {
       const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-      const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
+      const model = genAI.getGenerativeModel({ model: 'gemini-1.0-pro' });
       
       const systemPrompt = "You are Alex Nakamoto, a cryptocurrency expert and analyst. Provide accurate, technical insights about blockchain and crypto without financial advice or price predictions. Focus on education, security, and factual analysis.";
       const userMessages = messages.map(msg => msg.content).join('\n');
@@ -73,7 +81,7 @@ export async function POST(req: Request) {
       const result = await model.generateContentStream({
         contents: [{ role: 'user', parts: [{ text: fullPrompt }] }],
         generationConfig: {
-          maxOutputTokens: 7500,
+          maxTokens: 2500,
           temperature: 0.7,
         },
       });
