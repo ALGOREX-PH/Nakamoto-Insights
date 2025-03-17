@@ -8,8 +8,9 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Avatar } from "@/components/ui/avatar";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Send, Bot, User, Crown, Loader2 } from "lucide-react";
+import { Send, Bot, User, Crown, Loader2, Volume2, VolumeOff as Volume2Off } from "lucide-react";
 import ReactMarkdown from 'react-markdown';
+import { Voice, VoiceSettings } from 'elevenlabs-node';
 
 interface Message {
   id: string;
@@ -27,7 +28,46 @@ const ChatInterface = () => {
   const [messages, setMessages] = useState<Message[]>([initialMessage]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [audioUrl, setAudioUrl] = useState<string | null>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
   const abortControllerRef = useRef<AbortController | null>(null);
+
+  const playMessage = async (content: string) => {
+    if (isPlaying) return;
+    
+    try {
+      setIsPlaying(true);
+      const response = await fetch('/api/voice', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: content })
+      });
+      
+      if (!response.ok) throw new Error('Failed to generate speech');
+      
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+      setAudioUrl(url);
+      
+      if (audioRef.current) {
+        audioRef.current.src = url;
+        await audioRef.current.play();
+      }
+    } catch (error) {
+      console.error('Error playing voice:', error);
+    } finally {
+      setIsPlaying(false);
+    }
+  };
+
+  const stopPlaying = () => {
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
+      setIsPlaying(false);
+    }
+  };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setInput(e.target.value);
@@ -149,6 +189,14 @@ const ChatInterface = () => {
     }
   };
 
+  useEffect(() => {
+    return () => {
+      if (audioUrl) {
+        URL.revokeObjectURL(audioUrl);
+      }
+    };
+  }, [audioUrl]);
+
   return (
     <Card className="border-border/40">
       <CardContent className="p-0">
@@ -200,8 +248,24 @@ const ChatInterface = () => {
                           : "bg-muted/50 text-base"
                       }`}
                     >
-                      <div className="prose dark:prose-invert max-w-none">
-                        <ReactMarkdown>{message.content}</ReactMarkdown>
+                      <div className="flex justify-between items-start gap-2">
+                        <div className="prose dark:prose-invert max-w-none">
+                          <ReactMarkdown>{message.content}</ReactMarkdown>
+                        </div>
+                        {message.role === "assistant" && (
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8 shrink-0"
+                            onClick={() => isPlaying ? stopPlaying() : playMessage(message.content)}
+                          >
+                            {isPlaying ? (
+                              <Volume2Off className="h-4 w-4" />
+                            ) : (
+                              <Volume2 className="h-4 w-4" />
+                            )}
+                          </Button>
+                        )}
                       </div>
                     </div>
                     {message.role === "user" && (
@@ -227,6 +291,7 @@ const ChatInterface = () => {
                 )}
               </div>
             </ScrollArea>
+            <audio ref={audioRef} onEnded={() => setIsPlaying(false)} className="hidden" />
             <div className="p-4 border-t border-border/40 bg-card">
               <form onSubmit={handleSubmit} className="flex gap-2">
                 <Textarea
