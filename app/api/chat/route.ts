@@ -32,8 +32,8 @@ export async function POST(req: Request) {
           model: 'gemini-2.0-flash',
           safetySettings: [
             {
-              category: 'HARM_CATEGORY_HARASSMENT',
-              threshold: 'BLOCK_MEDIUM_AND_ABOVE',
+              category: 'HARASSMENT',
+              threshold: 'BLOCK_ONLY_HIGH',
             },
           ],
         });
@@ -86,8 +86,8 @@ export async function POST(req: Request) {
               model: 'gemini-pro-mini',
               safetySettings: [
                 {
-                  category: 'HARM_CATEGORY_HARASSMENT',
-                  threshold: 'BLOCK_MEDIUM_AND_ABOVE',
+                  category: 'HARASSMENT',
+                  threshold: 'BLOCK_ONLY_HIGH',
                 },
               ],
             });
@@ -154,7 +154,7 @@ export async function POST(req: Request) {
             'OpenAI-Organization': process.env.OPENAI_ORG_ID || '',
           },
           body: JSON.stringify({
-            model: 'gpt-4o-mini',
+            model: 'gpt-4-turbo-preview',
             max_tokens: 2500,
             messages: [
               {
