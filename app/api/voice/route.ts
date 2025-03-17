@@ -1,5 +1,3 @@
-import { Voice, VoiceSettings } from 'elevenlabs-node';
-
 export const runtime = 'edge';
 
 export async function POST(req: Request) {
