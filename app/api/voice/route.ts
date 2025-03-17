@@ -19,7 +19,7 @@ export async function POST(req: Request) {
     }
 
     const response = await fetch(
-      'https://api.elevenlabs.io/v1/text-to-speech/21m00Tcm4TlvDq8ikWAM/stream',
+      'https://api.elevenlabs.io/v1/text-to-speech/iP95p4xoKVk53GoZ742B/stream', // https://elevenlabs.io/app/voice-lab?voiceId=69Na567Zr0bPvmBYuGdc
       {
         method: 'POST',
         headers: {
