@@ -1,8 +1,6 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
 export const runtime = 'edge';
 
-const SUPPORTED_REGIONS = ['us-central1', 'us-east4', 'us-west1'];
-
 export async function POST(req: Request) {
   // Check if any API key exists
   if (!process.env.OPENAI_API_KEY && !process.env.GEMINI_API_KEY) {
@@ -60,57 +58,82 @@ export async function POST(req: Request) {
       } catch (error) {
         console.error('OpenAI Error:', error);
         // Continue to Gemini fallback
+        if (!process.env.GEMINI_API_KEY) {
+          throw error; // Re-throw OpenAI error if Gemini is not available
+        }
       }
     }
  
     // Fallback to Gemini if OpenAI failed or not available
     if (process.env.GEMINI_API_KEY) {
-      const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-      const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
+      try {
+        const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+        const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
       
-      const systemPrompt = "You are Alex Nakamoto, a cryptocurrency expert and analyst. Provide accurate, technical insights about blockchain and crypto without financial advice or price predictions. Focus on education, security, and factual analysis.";
-      const userMessages = messages.map(msg => msg.content).join('\n');
-      const fullPrompt = `${systemPrompt}\n\nUser Messages:\n${userMessages}`;
+        const systemPrompt = "You are Alex Nakamoto, a cryptocurrency expert and analyst. Provide accurate, technical insights about blockchain and crypto without financial advice or price predictions. Focus on education, security, and factual analysis.";
+        const userMessages = messages.map(msg => msg.content).join('\n');
+        const fullPrompt = `${systemPrompt}\n\nUser Messages:\n${userMessages}`;
 
-      const result = await model.generateContentStream({
-        contents: [{ role: 'user', parts: [{ text: fullPrompt }] }],
-        generationConfig: {
-          maxOutputTokens: 2500,
-          temperature: 0.7,
-        },
-      });
+        const result = await model.generateContentStream({
+          contents: [{ role: 'user', parts: [{ text: fullPrompt }] }],
+          generationConfig: {
+            maxOutputTokens: 2500,
+            temperature: 0.7,
+          },
+        });
 
-      const stream = new ReadableStream({
-        async start(controller) {
-          for await (const chunk of result.stream) {
-            const text = chunk.text();
-            const data = {
-              choices: [{
-                delta: { content: text },
-                finish_reason: null
-              }]
-            };
-            controller.enqueue(`data: ${JSON.stringify(data)}\n\n`);
+        const stream = new ReadableStream({
+          async start(controller) {
+            try {
+              for await (const chunk of result.stream) {
+                const text = chunk.text();
+                const data = {
+                  choices: [{
+                    delta: { content: text },
+                    finish_reason: null
+                  }]
+                };
+                controller.enqueue(`data: ${JSON.stringify(data)}\n\n`);
+              }
+              controller.enqueue('data: [DONE]\n\n');
+              controller.close();
+            } catch (error) {
+              controller.error(error);
+            }
           }
-          controller.enqueue('data: [DONE]\n\n');
-          controller.close();
-        }
-      });
+        });
 
-      return new Response(stream, {
-        headers: {
-          'Content-Type': 'text/event-stream',
-          'Cache-Control': 'no-cache',
-          'Connection': 'keep-alive',
-        },
-      });
+        return new Response(stream, {
+          headers: {
+            'Content-Type': 'text/event-stream',
+            'Cache-Control': 'no-cache',
+            'Connection': 'keep-alive',
+          },
+        });
+      } catch (error) {
+        if (error.message?.includes('location is not supported')) {
+          // If region is not supported and OpenAI key exists, throw error to trigger OpenAI retry
+          if (process.env.OPENAI_API_KEY) {
+            throw new Error('Gemini API not available in this region, falling back to OpenAI');
+          }
+          // Otherwise return region error
+          return new Response(
+            JSON.stringify({ error: 'This region is not supported for the Gemini API' }),
+            { status: 400, headers: { 'Content-Type': 'application/json' } }
+          );
+        }
+        throw error;
+      }
     }
 
     throw new Error('No available AI service');
   } catch (error) {
     console.error('Error:', error);
+    // Return a user-friendly error message
     return new Response(
-      JSON.stringify({ error: error instanceof Error ? error.message : 'An error occurred while processing your request' }),
+      JSON.stringify({ 
+        error: 'An error occurred while processing your request. Please try again later.' 
+      }),
       { status: 500, headers: { 'Content-Type': 'application/json' } }
     );
   }
