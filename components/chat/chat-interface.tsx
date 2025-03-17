@@ -10,7 +10,6 @@ import { Avatar } from "@/components/ui/avatar";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Send, Bot, User, Crown, Loader2, Volume2, VolumeOff as Volume2Off } from "lucide-react";
 import ReactMarkdown from 'react-markdown';
-import { Voice, VoiceSettings } from 'elevenlabs-node';
 
 interface Message {
   id: string;
