@@ -1,5 +1,8 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
+export const runtime = 'edge';
 
+// Try Gemini first, fallback to OpenAI
+const DEFAULT_PROVIDER = 'gemini';
 
 export async function POST(req: Request) {
   // Check if any API key exists
@@ -20,7 +23,126 @@ export async function POST(req: Request) {
       );
     }
 
-    // Try OpenAI first if API key is available
+    // Try Gemini first if API key is available
+    if (process.env.GEMINI_API_KEY && DEFAULT_PROVIDER === 'gemini') {
+      try {
+        const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+        // Use gemini-2.0-flash for faster responses, fallback to pro-mini
+        const model = genAI.getGenerativeModel({ 
+          model: 'gemini-2.0-flash',
+          safetySettings: [
+            {
+              category: 'HARM_CATEGORY_HARASSMENT',
+              threshold: 'BLOCK_MEDIUM_AND_ABOVE',
+            },
+          ],
+        });
+      
+        const systemPrompt = "You are Alex Nakamoto, a cryptocurrency expert and analyst. Provide accurate, technical insights about blockchain and crypto without financial advice or price predictions. Focus on education, security, and factual analysis.";
+        const userMessages = messages.map(msg => msg.content).join('\n');
+        const fullPrompt = `${systemPrompt}\n\nUser Messages:\n${userMessages}`;
+
+        try {
+          const result = await model.generateContentStream({
+            contents: [{ role: 'user', parts: [{ text: fullPrompt }] }],
+            generationConfig: {
+              maxOutputTokens: 2500,
+              temperature: 0.7,
+            },
+          });
+
+          const stream = new ReadableStream({
+            async start(controller) {
+              try {
+                for await (const chunk of result.stream) {
+                  const text = chunk.text();
+                  const data = {
+                    choices: [{
+                      delta: { content: text },
+                      finish_reason: null
+                    }]
+                  };
+                  controller.enqueue(`data: ${JSON.stringify(data)}\n\n`);
+                }
+                controller.enqueue('data: [DONE]\n\n');
+                controller.close();
+              } catch (error) {
+                controller.error(error);
+              }
+            }
+          });
+
+          return new Response(stream, {
+            headers: {
+              'Content-Type': 'text/event-stream',
+              'Cache-Control': 'no-cache',
+              'Connection': 'keep-alive',
+            },
+          });
+        } catch (error) {
+          // If flash model fails, try pro-mini
+          if (error.message?.includes('model not found')) {
+            const miniModel = genAI.getGenerativeModel({ 
+              model: 'gemini-pro-mini',
+              safetySettings: [
+                {
+                  category: 'HARM_CATEGORY_HARASSMENT',
+                  threshold: 'BLOCK_MEDIUM_AND_ABOVE',
+                },
+              ],
+            });
+
+            const result = await miniModel.generateContentStream({
+              contents: [{ role: 'user', parts: [{ text: fullPrompt }] }],
+              generationConfig: {
+                maxOutputTokens: 2500,
+                temperature: 0.7,
+              },
+            });
+
+            const stream = new ReadableStream({
+              async start(controller) {
+                try {
+                  for await (const chunk of result.stream) {
+                    const text = chunk.text();
+                    const data = {
+                      choices: [{
+                        delta: { content: text },
+                        finish_reason: null
+                      }]
+                    };
+                    controller.enqueue(`data: ${JSON.stringify(data)}\n\n`);
+                  }
+                  controller.enqueue('data: [DONE]\n\n');
+                  controller.close();
+                } catch (error) {
+                  controller.error(error);
+                }
+              }
+            });
+
+            return new Response(stream, {
+              headers: {
+                'Content-Type': 'text/event-stream',
+                'Cache-Control': 'no-cache',
+                'Connection': 'keep-alive',
+              },
+            });
+          }
+          throw error;
+        }
+      } catch (error) {
+        console.error('Gemini Error:', error);
+        // If Gemini fails, try OpenAI
+        if (process.env.OPENAI_API_KEY) {
+          console.log('Falling back to OpenAI...');
+        } else {
+          throw error;
+        }
+      }
+    }
+
+    // Fallback to OpenAI if Gemini fails or not available
     if (process.env.OPENAI_API_KEY) {
       try {
         const response = await fetch('https://api.openai.com/v1/chat/completions', {
@@ -57,83 +179,19 @@ export async function POST(req: Request) {
         }
       } catch (error) {
         console.error('OpenAI Error:', error);
-        // Continue to Gemini fallback
-        if (!process.env.GEMINI_API_KEY) {
-          throw error; // Re-throw OpenAI error if Gemini is not available
-        }
-      }
-    }
- 
-    // Fallback to Gemini if OpenAI failed or not available
-    if (process.env.GEMINI_API_KEY) {
-      try {
-        const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-        const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
-      
-        const systemPrompt = "You are Alex Nakamoto, a cryptocurrency expert and analyst. Provide accurate, technical insights about blockchain and crypto without financial advice or price predictions. Focus on education, security, and factual analysis.";
-        const userMessages = messages.map(msg => msg.content).join('\n');
-        const fullPrompt = `${systemPrompt}\n\nUser Messages:\n${userMessages}`;
-
-        const result = await model.generateContentStream({
-          contents: [{ role: 'user', parts: [{ text: fullPrompt }] }],
-          generationConfig: {
-            maxOutputTokens: 2500,
-            temperature: 0.7,
-          },
-        });
-
-        const stream = new ReadableStream({
-          async start(controller) {
-            try {
-              for await (const chunk of result.stream) {
-                const text = chunk.text();
-                const data = {
-                  choices: [{
-                    delta: { content: text },
-                    finish_reason: null
-                  }]
-                };
-                controller.enqueue(`data: ${JSON.stringify(data)}\n\n`);
-              }
-              controller.enqueue('data: [DONE]\n\n');
-              controller.close();
-            } catch (error) {
-              controller.error(error);
-            }
-          }
-        });
-
-        return new Response(stream, {
-          headers: {
-            'Content-Type': 'text/event-stream',
-            'Cache-Control': 'no-cache',
-            'Connection': 'keep-alive',
-          },
-        });
-      } catch (error) {
-        if (error.message?.includes('location is not supported')) {
-          // If region is not supported and OpenAI key exists, throw error to trigger OpenAI retry
-          if (process.env.OPENAI_API_KEY) {
-            throw new Error('Gemini API not available in this region, falling back to OpenAI');
-          }
-          // Otherwise return region error
-          return new Response(
-            JSON.stringify({ error: 'This region is not supported for the Gemini API' }),
-            { status: 400, headers: { 'Content-Type': 'application/json' } }
-          );
-        }
         throw error;
       }
     }
-
+ 
     throw new Error('No available AI service');
   } catch (error) {
     console.error('Error:', error);
-    // Return a user-friendly error message
+    let errorMessage = 'An error occurred while processing your request. Please try again later.';
+    if (error.message?.includes('location is not supported')) {
+      errorMessage = 'This region is not supported. Please try again later.';
+    }
     return new Response(
-      JSON.stringify({ 
-        error: 'An error occurred while processing your request. Please try again later.' 
-      }),
+      JSON.stringify({ error: errorMessage }),
       { status: 500, headers: { 'Content-Type': 'application/json' } }
     );
   }
