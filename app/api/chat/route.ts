@@ -1,6 +1,8 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
 export const runtime = 'edge';
 
+const SUPPORTED_REGIONS = ['us-central1', 'us-east4', 'us-west1'];
+
 export async function POST(req: Request) {
   // Check if any API key exists
   if (!process.env.OPENAI_API_KEY && !process.env.GEMINI_API_KEY) {
