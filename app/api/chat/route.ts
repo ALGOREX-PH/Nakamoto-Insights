@@ -29,13 +29,7 @@ export async function POST(req: Request) {
         const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
         // Use gemini-2.0-flash for faster responses, fallback to pro-mini
         const model = genAI.getGenerativeModel({ 
-          model: 'gemini-2.0-flash',
-          safetySettings: [
-            {
-              category: 'HARASSMENT',
-              threshold: 'BLOCK_ONLY_HIGH',
-            },
-          ],
+          model: 'gemini-2.0-flash'
         });
       
         const systemPrompt = "You are Alex Nakamoto, a cryptocurrency expert and analyst. Provide accurate, technical insights about blockchain and crypto without financial advice or price predictions. Focus on education, security, and factual analysis.";
@@ -83,13 +77,7 @@ export async function POST(req: Request) {
           // If flash model fails, try pro-mini
           if (error.message?.includes('model not found')) {
             const miniModel = genAI.getGenerativeModel({ 
-              model: 'gemini-pro-mini',
-              safetySettings: [
-                {
-                  category: 'HARASSMENT',
-                  threshold: 'BLOCK_ONLY_HIGH',
-                },
-              ],
+              model: 'gemini-pro-mini'
             });
 
             const result = await miniModel.generateContentStream({
@@ -188,7 +176,46 @@ export async function POST(req: Request) {
     console.error('Error:', error);
     let errorMessage = 'An error occurred while processing your request. Please try again later.';
     if (error.message?.includes('location is not supported')) {
-      errorMessage = 'This region is not supported. Please try again later.';
+      errorMessage = 'This region is not currently supported. Falling back to OpenAI...';
+      // If region is not supported for Gemini, try OpenAI
+      if (process.env.OPENAI_API_KEY) {
+        try {
+          const response = await fetch('https://api.openai.com/v1/chat/completions', {
+            method: 'POST',
+            headers: {
+              'OpenAI-Beta': 'assistants=v1',
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
+              'OpenAI-Organization': process.env.OPENAI_ORG_ID || '',
+            },
+            body: JSON.stringify({
+              model: 'gpt-4-turbo-preview',
+              max_tokens: 2500,
+              messages: [
+                {
+                  role: 'system',
+                  content: "You are Alex Nakamoto, a cryptocurrency expert and analyst. Provide accurate, technical insights about blockchain and crypto without financial advice or price predictions. Focus on education, security, and factual analysis.",
+                },
+                ...messages,
+              ],
+              stream: true,
+              temperature: 0.7,
+            }),
+          });
+
+          if (response.ok) {
+            return new Response(response.body, {
+              headers: {
+                'Content-Type': 'text/event-stream',
+                'Cache-Control': 'no-cache',
+                'Connection': 'keep-alive',
+              },
+            });
+          }
+        } catch (error) {
+          console.error('OpenAI Fallback Error:', error);
+        }
+      }
     }
     return new Response(
       JSON.stringify({ error: errorMessage }),
