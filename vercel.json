@@ -1,3 +1,3 @@
 {
-    "regions": ["sfo1"] // Example: Deploying in San Francisco (USA)
+    "regions": ['sfo1'] // Example: Deploying in San Francisco (USA)
 }
