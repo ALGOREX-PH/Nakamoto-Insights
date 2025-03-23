@@ -1,6 +1,6 @@
 import { Metadata } from "next";
 import HeroSection from "@/components/about/hero-section";
-import BioSection from "@/components/about/bio-section";
+import BioSection from "@/components/about/bio-section"; 
 import ContactForm from "@/components/about/contact-form";
 import { Card, CardContent } from "@/components/ui/card";
 export const metadata: Metadata = {
